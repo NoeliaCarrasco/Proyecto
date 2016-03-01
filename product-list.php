@@ -1,4 +1,5 @@
 <?PHP
+include_once("./db_configuration.php");
 	session_start();
 	if(!isset($_SESSION['rol'])){header('location: login.php');}
 	$categoria = 0;
@@ -20,7 +21,7 @@
 		$edad = 0;
 	}
 	
-	$mysqli = new mysqli("localhost", "root", "", "deportes");
+	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
 	/* comprobar la conexión */
 	if (mysqli_connect_errno()) {

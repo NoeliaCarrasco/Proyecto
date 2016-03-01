@@ -1,4 +1,5 @@
 <?php
+include_once("./db_configuration.php");
 	session_start();
 	if(!isset($_SESSION['rol'])){header('location: login.php');}
     if((isset($_REQUEST['usuario']) && $_REQUEST['usuario'] != '') &&
@@ -6,7 +7,7 @@
         $usuario = $_REQUEST['usuario'];
         $password = $_REQUEST['password'];
         
-        $mysqli = new mysqli("localhost", "root", "", "deportes");
+       $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
         /* comprobar la conexión */
         if (mysqli_connect_errno()) {

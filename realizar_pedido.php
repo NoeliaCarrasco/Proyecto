@@ -1,9 +1,10 @@
 <?php
+include_once("./db_configuration.php");
 	session_start();
 	if(!isset($_SESSION['rol'])){header('location: login.php');}
 	$id_usuario = '';
 	if(isset($_SESSION['carrito'])){
-		$connection = new mysqli("localhost", "root", "", "deportes");
+		$connection = new mysqli($db_host, $db_user, $db_password, "deportes");
 		$fechaPedido = getdate();
 		$fechaPedido = $fechaPedido['year']."-".$fechaPedido['mon']."-".$fechaPedido['mday'];
 		if (isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') {

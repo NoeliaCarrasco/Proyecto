@@ -1,4 +1,5 @@
 <?php
+include_once("./db_configuration.php");
 	session_start();
 	/*echo '<pre>$_REQUEST<BR>'.print_r($_REQUEST, true).'</pre>';
 	echo '<pre>$_SESSION<BR>'.print_r($_SESSION, true).'</pre>';
@@ -7,7 +8,7 @@
 
 	if(!isset($_SESSION['rol'])){header('location: login.php');}else{if(intval($_SESSION['rol']) != 2){header('location: index.php');}}
 	if(isset($_REQUEST['nombre'])&&isset($_REQUEST['categoria'])){
-		$connection = new mysqli("localhost", "root", "", "deportes");
+		$connection = new mysqli($db_host, $db_user, $db_password, "deportes");
 		
 		$insert="INSERT INTO productos VALUES(NULL, '".$_REQUEST['nombre']."', '".$_REQUEST['precio']."', '".intval($_REQUEST['stock'])."', '".$_FILES['fileToUpload']['name']."', '".$_REQUEST['categoria']."', '".$_REQUEST['descripcion']."')";
 		echo '<pre>'.print_r($_REQUEST, true).'</pre>';
