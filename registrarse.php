@@ -179,7 +179,7 @@
                                             <div class="row">
                                                 <div class="form-group col-sm-12">
                                                     <label for="password">Contraseña</label>
-                                                    <input name="password" type="text" class="form-control myInput" id="password">
+                                                    <input name="password" type="password" class="form-control myInput" id="password">
                                                 </div>
                                             </div>
 											
