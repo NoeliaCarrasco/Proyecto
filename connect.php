@@ -8,7 +8,6 @@ include_once("./db_configuration.php");
         
         $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
-        /* comprobar la conexión */
         if (mysqli_connect_errno()) {
             printf("Falló la conexión: %s\n", mysqli_connect_error());
             exit();
@@ -17,7 +16,6 @@ include_once("./db_configuration.php");
         $consulta = "SELECT * FROM usuarios WHERE USUARIO = '".$usuario."' AND PASSWORD = '".md5($password)."'";
         if ($resultado = $mysqli->query($consulta)) {
             if($resultado->num_rows > 0){
-            /* liberar el conjunto de resultados */
                     session_start();
                     $usuario_conectado = $resultado->fetch_assoc();
                     $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];
@@ -29,7 +27,6 @@ include_once("./db_configuration.php");
             $resultado->close();
         }
 
-        /* cerrar la conexión */
         $mysqli->close();
     }else{
 		header('Location: index.php?e=2');
