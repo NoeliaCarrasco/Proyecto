@@ -1,13 +1,13 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['rol'])){header('location: login.php');}
-	if(!isset($_SESSION['carrito'])){ $_SESSION['carrito'] = [];}
-	if(isset($_SESSION['carrito'][$_REQUEST['IDPRODUCTO']])){
-		if(isset($_REQUEST['CANTIDAD']) && $_REQUEST['CANTIDAD'] > 0){ 
-			$_SESSION['carrito'][$_REQUEST['IDPRODUCTO']]['CANTIDAD']+=$_REQUEST['CANTIDAD'];
-		}else{
-			$_SESSION['carrito'][$_REQUEST['IDPRODUCTO']]['CANTIDAD']++;
-		}
+    if(!isset($_SESSION['carrito'])){ $_SESSION['carrito'] = [];}
+    if(isset($_SESSION['carrito'][$_REQUEST['IDPRODUCTO']])){
+        if(isset($_REQUEST['CANTIDAD']) && $_REQUEST['CANTIDAD'] > 0){ 
+            $_SESSION['carrito'][$_REQUEST['IDPRODUCTO']]['CANTIDAD']+=$_REQUEST['CANTIDAD'];
+        }else{
+            $_SESSION['carrito'][$_REQUEST['IDPRODUCTO']]['CANTIDAD']++;
+        }
 	}else{
 		$nuevoProducto = [];
 		$nuevoProducto['NOMBRE'] = $_REQUEST['NOMBRE'];
@@ -21,5 +21,5 @@
 			$_SESSION['carrito'][$_REQUEST['IDPRODUCTO']]['CANTIDAD']++;
 		}
 	}
-	header('location: product-list.php');
+	header('location: '.$_SERVER['HTTP_REFERER']);
 ?>

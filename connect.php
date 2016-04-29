@@ -1,5 +1,6 @@
 <?php
 include_once("./db_configuration.php");
+    $usuario_conectado = [];
     if((isset($_REQUEST['usuario']) && $_REQUEST['usuario'] != '') &&
        (isset($_REQUEST['password']) && $_REQUEST['password'] != '')){
         $usuario = $_REQUEST['usuario'];
@@ -13,16 +14,15 @@ include_once("./db_configuration.php");
             exit();
         }
 
-        $consulta = "SELECT * FROM usuarios WHERE USUARIO = '".$usuario."' AND PASSWORD = '".$password."'";
-		
+        $consulta = "SELECT * FROM usuarios WHERE USUARIO = '".$usuario."' AND PASSWORD = '".md5($password)."'";
         if ($resultado = $mysqli->query($consulta)) {
             if($resultado->num_rows > 0){
             /* liberar el conjunto de resultados */
-                session_start();
-                $usuario_conectado = $resultado->fetch_assoc();
-                $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];
-                $_SESSION['rol'] = $usuario_conectado['ROL'];
-                header('Location: index.php');
+                    session_start();
+                    $usuario_conectado = $resultado->fetch_assoc();
+                    $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];
+                    $_SESSION['rol'] = $usuario_conectado['ROL'];
+                    header('Location: index.php');
             }else{
                 header('Location: login.php?e=1');
             }
