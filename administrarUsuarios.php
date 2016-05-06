@@ -36,7 +36,6 @@ include_once("./db_configuration.php");
 	if ($resultado = $mysqli->query($consulta)) {
 		if($resultado->num_rows > 0){
 			while ( $fila = $resultado->fetch_assoc() ) {
-			/* liberar el conjunto de resultados */
 				array_push($usuarios, $fila);
 			}
 		}
@@ -187,6 +186,7 @@ include_once("./db_configuration.php");
 						<ul>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarpedidos.php">Pedidos</a></li>
 						</ul>
 					</li>
 					<?PHP
@@ -447,6 +447,7 @@ include_once("./db_configuration.php");
 														<th>NOMBRE</th>
 														<th>APELLIDOS</th>
 														<th>ROL</th>
+														<th></th>
 														<th></th>
 														<th></th>
 													</tr>

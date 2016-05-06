@@ -215,6 +215,7 @@ include_once("./db_configuration.php");
 						<ul>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarpedidos.php">Pedidos</a></li>
 						</ul>
 					</li>
 					<?PHP

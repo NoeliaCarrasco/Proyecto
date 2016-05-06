@@ -1,6 +1,14 @@
 <?PHP
+/*
+
+SELECT P.IDPEDIDO AS Pedido, u.USUARIO AS Usuario, p.FECHA_ALTA AS Fecha, SUM(dp.CANTIDAD*dp.IMPORTE) AS Total FROM pedidos p, detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO, p.FECHA_ALTA DESC;
+
+SELECT p.IDPEDIDO AS Pedido, p.FECHA_ALTA AS Enviado, c.NOMBRE AS Articulo, pr.NOMBRE AS Tipo, dp.CANTIDAD AS Cantidad, dp.IMPORTE AS PRECIO, (dp.CANTIDAD * dp.IMPORTE) AS Total FROM detallespedido dp, categorias c, pedidos p, productos pr WHERE c.IDCATEGORIA = pr.IDCATEGORIA AND p.IDPEDIDO = 30 AND p.IDPEDIDO = dp.IDPEDIDO AND dp.IDPRODUCTO = pr.IDPRODUCTO; 
+
+*/
+
+include_once("./db_configuration.php");
 	session_start();
-	if(!isset($_SESSION['rol'])){header('location: login.php');}
 	$producto = 0;
 	$edad = 0;
 	$sexo = 0;
@@ -19,6 +27,20 @@
 	}else{
 		$edad = 0;
 	}
+	
+	
+	
+    $connection = new mysqli($db_host, $db_user, $db_password, "deportes");
+    $query = "SELECT P.IDPEDIDO AS Pedido, u.USUARIO AS Usuario, p.FECHA_ALTA AS Fecha, SUM(dp.CANTIDAD*dp.IMPORTE) AS Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,                   p.FECHA_ALTA DESC;";
+    $pedidos=$connection->query($query);
+    $pedido=null;
+    $lista_pedidos = [];
+    do{
+        if($pedido != null){
+            array_push($lista_pedidos, $pedido);
+        }
+    }while($pedido=$pedidos->fetch_object());
+
 ?>
 
 <!DOCTYPE html>
@@ -126,6 +148,18 @@
         ================= Search Container ==================
         ================================================= -->
 
+        <div id="search-container" class="search-box-wrapper">
+            <div class="container">
+                <i class="fa fa-search"></i>
+                <div class="search-box">
+                    <form action="http://example.com/" class="search-form" role="search" >
+                        <input type="search" name="s" value="" title="Press Enter to submit your search" placeholder="Search…" class="search-field">
+                        <input type="submit" value="Search" class="search-submit">
+                    </form>
+                </div>
+            </div>
+        </div><!--/ #search-container -->
+
 
 
 
@@ -141,7 +175,7 @@
 
             <div class="container clearfix">
 
-                <ul class="pull-right">
+                 <ul class="pull-right">
 					<li><a href="#">Administrar</a>
 						<ul>
 					
@@ -362,290 +396,122 @@
 
 
         <!-- ============================================
-        ==================== Slider =====================
+        =================== Breadcrumbs =================
+        ============================================= -->
+         <section id="breadcrumbs" class="breadcrumbs">
+
+            <div class="container clearfix">
+                <h1>Administrar Pedidos</h1>
+                
+
+        </section><!-- #breadcrumbs end -->
+
+
+
+
+
+
+
+
+
+
+
+        <!-- ============================================
+        =================== Content =====================
         ============================================= -->
 
-        <section id="slider" class="slider-parallax">
+        <section id="content">
 
-            <!--
-            #################################
-                - THEMEPUNCH BANNER -
-            #################################
-            -->
+            <div class="content-wrap">
 
-            <div class="+tp-banner-container">
+                <div class="container clearfix">
+                    <div class="row">
 
-                <div class="tp-banner" >
 
-                    <ul>
+                        <div class="col-md-12">
 
-                        <!-- SLIDE  -->
-                        <li data-transition="fade" data-slotamount="1" data-masterspeed="1000" data-thumb="imagenes/primerfo.jpg">
+                            <div class="checkout">
 
-                            <!-- MAIN IMAGE -->
-                            <img src="imagenes/primerfo.jpg" alt="" data-bgposition="center center" data-bgrepeat="no-repeat">
+                                <div class="row">
 
-                            <!-- LAYERS -->
+                                    <div class="col-md-12">
+                                        <h4 class="mt-40">LISTA DE PEDIDOS</h4>
 
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption black_thin_blackbg_30 lft fadeout"
-                                data-x="120"
-                                data-y="220"
-                                data-speed="800"
-                                data-start="1000"
-                                data-easing="easeOutQuad"
-                                data-endspeed="1000"
-                                data-endeasing="Power4.easeIn" style="white-space: normal;">
+										<div class="table-responsive">
+											<table class="table myTable">
+												<thead>
+													<tr>
+														<th>IDPEDIDO</th>
+														<th>IDUSUARIO</th>
+														<th>FECHA</th>
+														<th>IMPORTE</th>
+                                                        
+                                                        
+                                                        <th></th>
+                                                        <?PHP
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
+												        ?>
+                                                        <th></th>
+														<th></th>
+                                                        <?php
+                                                            }
+                                                        ?>
+													</tr>
+												</thead>
+												<tbody>
+												
+												<?PHP
+													foreach($lista_pedidos as $pedido){
+												?>
+													<tr>
+														<td class="product">
+															<?=$pedido->Pedido?>
+														</td>
+														<td class="product">
+															<?=$pedido->Usuario?>
+														</td>
+														<td class="product">
+															<?=$pedido->Fecha?>
+														</td>
+														<td class="product">
+															<?=$pedido->Total?>
+														</td>
+														<td><a href="Administrardetallespedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-eye text-primary"></i></a></td>
+                                                        <?PHP
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
+												        ?>
+                                                        <td><a href="modificarpedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-edit text-primary"></i></a></td>
+														<td><a href="borrarPedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-times-circle"></i></a></td>
+                                                        <?php
+                                                            }
+                                                        ?>
+													</tr>
+												<?PHP
+                                                    }
+												?>
+											   
+												</tbody>
+											</table>
+										</div>
+                                    </div>
+
+                                    
+
+                                </div>
+
                             </div>
 
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption big-text skewfromleft fadeout"
-                                data-x="150"
-                                data-y="300"
-                                data-speed="800"
-                                data-start="1000"
-                                data-easing="easeOutQuad"
-                                data-endspeed="1000"
-                                data-endeasing="Power4.easeIn">
-                            </div>
+                        </div>
 
-                            <!-- LAYER NR. 3 -->
-                            
-                            <!-- LAYER NR. 4 -->
-                            <div class="tp-caption lfb fadeout"
-                                data-x="480"
-                                data-y="560"
-                                data-speed="800"
-                                data-start="1000"
-                                data-easing="easeOutQuad"
-                                data-endspeed="1000"
-                                data-endeasing="Power4.easeIn"><a href="#" class="myBtn myBtn-3d myBtn-theme myBtn-rounded text-sm"><span></span> <i class="fa fa-angle-right"></i></a>
-                            </div>
+                    </div>
+                    <!-- /row -->
 
-
-                        </li>
-
-                        <!-- SLIDE  -->
-                        <li data-transition="slideup" data-slotamount="1" data-masterspeed="1000" data-thumb="imagenes/ropa-deportiva-americana-estilos.jpg">
-
-                            <!-- MAIN IMAGE -->
-                            <img src="imagenes/ropa-deportiva-americana-estilos.jpg" alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat">
-
-                            <!-- LAYERS -->
-
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption white_heavy_70 tp-fade fadeout"
-                                data-x="right" data-hoffset="90"
-                                data-y="top" data-voffset="0"
-                                data-speed="500"
-                                data-start="500"
-                                data-easing="Power4.easeOut"
-                                data-splitin="chars"
-                                data-splitout="chars"
-                                data-elementdelay="0.05"
-                                data-endelementdelay="0.05"
-                                data-endspeed="300"
-                                data-endeasing="Power1.easeOut"style="z-index: 6; white-space: nowrap;">
-                            </div>
-
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption whiteline_long customin fadeout"
-                                data-x="right" data-hoffset="245"
-                                data-y="top" data-voffset="90"
-                                data-customin="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0;scaleY:0;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                data-speed="500"
-                                data-start="500"
-                                data-easing="Power4.easeOut"
-                                data-splitin="none"
-                                data-splitout="none"
-                                data-elementdelay="0.1"
-                                data-endelementdelay="0.1"
-                                data-endspeed="600"
-                                data-endeasing="Power1.easeOut"style="z-index: 7; white-space: nowrap;">
-                            </div>
-
-                            <!-- LAYER NR. 3 -->
-                            <div class="tp-caption light_medium_20 tp-fade fadeout"
-                                data-x="right" data-hoffset="180"
-                                data-y="top" data-voffset="120"
-                                data-speed="600"
-                                data-start="800"
-                                data-easing="Power4.easeOut"
-                                data-splitin="none"
-                                data-splitout="none"
-                                data-elementdelay="0.1"
-                                data-endelementdelay="0.1"
-                                data-endspeed="600"
-                                data-endeasing="Power1.easeOut"style="z-index: 8; white-space: nowrap;">
-                            </div>
-
-
-                        </li>
-
-                        <!-- SLIDE  -->
-                        <li data-transition="slideup" data-slotamount="1" data-masterspeed="1000"  datathumb="imagenes/decimas_rotativo_rebajas_hombre_esp.jpg" data-delay="15000"  data-saveperformance="off">
-
-                            <!-- MAIN IMAGE -->
-                            <img src="imagenes/decimas_rotativo_rebajas_hombre_esp.jpg" alt="" data-bgposition="right center" data-kenburns="on" data-duration="16000" data-ease="Linear.easeNone" data-bgfit="135" data-bgfitend="90" data-bgpositionend="center center">
-
-                            <!-- LAYERS -->
-
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption white_heavy_70 tp-fade fadeout"
-                                data-x="center" data-hoffset="-80"
-                                data-y="center" data-voffset="0"
-                                data-speed="500"
-                                data-start="500"
-                                data-easing="Power4.easeOut"
-                                data-splitin="chars"
-                                data-splitout="chars"
-                                data-elementdelay="0.05"
-                                data-endelementdelay="0.05"
-                                data-endspeed="300"
-                                data-endeasing="Power1.easeOut"style="z-index: 6; white-space: nowrap;">
-                            </div>
-
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption whiteline_long customin fadeout"
-                                data-x="center" data-hoffset="0"
-                                data-y="center" data-voffset="50"
-                                data-customin="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0;scaleY:0;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                data-speed="500"
-                                data-start="500"
-                                data-easing="Power4.easeOut"
-                                data-splitin="none"
-                                data-splitout="none"
-                                data-elementdelay="0.1"
-                                data-endelementdelay="0.1"
-                                data-endspeed="600"
-                                data-endeasing="Power1.easeOut"style="z-index: 7; white-space: nowrap;">
-                            </div>
-
-                            <!-- LAYER NR. 3 -->
-                            <div class="tp-caption light_medium_20 tp-fade fadeout"
-                                data-x="center" data-hoffset="-85"
-                                data-y="center" data-voffset="120"
-                                data-speed="600"
-                                data-start="800"
-                                data-easing="Power4.easeOut"
-                                data-splitin="none"
-                                data-splitout="none"
-                                data-elementdelay="0.1"
-                                data-endelementdelay="0.1"
-                                data-endspeed="600"
-                                data-endeasing="Power1.easeOut"style="z-index: 8; white-space: nowrap;">
-                            </div>
-
-
-
-                        </li>
-
-
-                    </ul>
 
                 </div>
-
-                <script type="text/javascript">
-
-                    $(document).ready(function() {
-
-                        var apiRevoSlider = $('.tp-banner').show().revolution(
-                                {
-                                    dottedOverlay:"none",
-                                    delay:9000,
-                                    startwidth:1140,
-                                    startheight:700,
-                                    hideThumbs:200,
-
-                                    thumbWidth:100,
-                                    thumbHeight:50,
-                                    thumbAmount:3,
-
-                                    navigationType:"none",
-                                    navigationArrows:"solo",
-                                    navigationStyle:"preview1",
-
-                                    touchenabled:"on",
-                                    onHoverStop:"on",
-
-                                    swipe_velocity: 0.7,
-                                    swipe_min_touches: 1,
-                                    swipe_max_touches: 1,
-                                    drag_block_vertical: false,
+                <!-- /container -->
 
 
-                                    parallax:"mouse",
-                                    parallaxBgFreeze:"on",
-                                    parallaxLevels:[8,7,6,5,4,3,2,1],
-                                    parallaxDisableOnMobile:"on",
 
-
-                                    keyboardNavigation:"on",
-
-                                    navigationHAlign:"center",
-                                    navigationVAlign:"bottom",
-                                    navigationHOffset:0,
-                                    navigationVOffset:20,
-
-                                    soloArrowLeftHalign:"left",
-                                    soloArrowLeftValign:"center",
-                                    soloArrowLeftHOffset:20,
-                                    soloArrowLeftVOffset:0,
-
-                                    soloArrowRightHalign:"right",
-                                    soloArrowRightValign:"center",
-                                    soloArrowRightHOffset:20,
-                                    soloArrowRightVOffset:0,
-
-                                    shadow:0,
-                                    fullWidth:"off",
-                                    fullScreen:"on",
-
-                                    spinner:"spinner3",
-
-                                    stopLoop:"off",
-                                    stopAfterLoops:-1,
-                                    stopAtSlide:-1,
-
-                                    shuffle:"off",
-
-                                    forceFullWidth:"off",
-                                    fullScreenAlignForce:"off",
-                                    minFullScreenHeight:"400",
-
-                                    hideThumbsOnMobile:"off",
-                                    hideNavDelayOnMobile:1500,
-                                    hideBulletsOnMobile:"off",
-                                    hideArrowsOnMobile:"off",
-                                    hideThumbsUnderResolution:0,
-
-                                    hideSliderAtLimit:0,
-                                    hideCaptionAtLimit:0,
-                                    hideAllCaptionAtLilmit:0,
-                                    startWithSlide:0,
-                                    fullScreenOffsetContainer: ".header"
-                                });
-
-                        apiRevoSlider.bind("revolution.slide.onchange",function (e,data) {
-                            if( $(window).width() > 992 ) {
-                                if( $('#slider ul > li').eq(data.slideIndex-1).hasClass('light') ){
-                                    $('#header:not(.sticky-header)').addClass('light');
-                                } else {
-                                    $('#header:not(.sticky-header)').removeClass('light');
-                                }
-                                MINOVATE.header.chooseLogo();
-                            }
-                        });
-
-                    }); //ready
-
-                </script>
-
-            </div>
-            <!-- END REVOLUTION SLIDER -->
-
-
-        </section><!-- #slider end -->
 
         <!-- ============================================
         ==================== Footer =====================
@@ -676,9 +542,9 @@
 
                         <div class="col-md-4">
                             <div class="widget widget-contact mt-20-md">
-                                <h4><strong>Contactenos</h4>
+                                <h4><strong>Contactenos</strong> </h4>
                                 <address>
-                                     <strong>Sevilla</strong><br>
+                                    <strong>Sevilla</strong><br>
                                     Avenida de la constitucion s/n<br>
                                     España<br/><br/>
                                     <strong>Telefono:</strong> +34 654 742 783<br>
@@ -695,11 +561,14 @@
                     <!-- row -->
                     <div class="row">
 
-
                     </div>
                     <!-- /row -->
 
                 </div>
+            </div>
+
+            <div class="footer-bottom">
+                
             </div>
 
         </footer><!-- #footer end -->
@@ -749,6 +618,7 @@
     <script type="text/javascript" src="assets/js/vendor/countTo/jquery.countTo.js"></script>
     <script type="text/javascript" src="assets/js/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="assets/js/vendor/range-slider/js/plugin.js"></script>
+    <script type="text/javascript" src="assets/js/vendor/touchspin/jquery.bootstrap-touchspin.js"></script>
 
     <!-- SLIDER REVOLUTION 4.x SCRIPTS  -->
     <script type="text/javascript" src="assets/js/vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
