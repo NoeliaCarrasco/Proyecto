@@ -1,12 +1,4 @@
 <?PHP
-/*
-
-SELECT P.IDPEDIDO AS Pedido, u.USUARIO AS Usuario, p.FECHA_ALTA AS Fecha, SUM(dp.CANTIDAD*dp.IMPORTE) AS Total FROM pedidos p, detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO, p.FECHA_ALTA DESC;
-
-SELECT p.IDPEDIDO AS Pedido, p.FECHA_ALTA AS Enviado, c.NOMBRE AS Articulo, pr.NOMBRE AS Tipo, dp.CANTIDAD AS Cantidad, dp.IMPORTE AS PRECIO, (dp.CANTIDAD * dp.IMPORTE) AS Total FROM detallespedido dp, categorias c, pedidos p, productos pr WHERE c.IDCATEGORIA = pr.IDCATEGORIA AND p.IDPEDIDO = 30 AND p.IDPEDIDO = dp.IDPEDIDO AND dp.IDPRODUCTO = pr.IDPRODUCTO; 
-
-*/
-
 include_once("./db_configuration.php");
 	session_start();
 	$producto = 0;
