@@ -509,7 +509,7 @@ include_once("./db_configuration.php");
                                                             zoomType: "inner"
                                                         });
 
-                                                    }); //ready
+                                                    }); //cada vez que ponemos el raton encima de la imagen la aumenta 
 
                                                 </script>
                                             </div>
@@ -532,7 +532,7 @@ include_once("./db_configuration.php");
 														<input type="hidden" name="FOTO" value="<?PHP echo $producto['FOTO']; ?>">
 														<input type="hidden" name="NOMBRE" value="<?PHP echo $producto['NOMBRE']; ?>">
 														<input type="hidden" name="PRECIO" value="<?PHP echo $producto['PRECIO']; ?>">
-														<input type="text" name="CANTIDAD" value="1" max="<?PHP echo $producto['STOCK']; ?>" class="myInput quantity touchspin">
+														<input type="text" name="CANTIDAD" value="1" max="<?PHP echo $producto['STOCK'];//son los campos del producto que coge. Estan ocultos menos la cantidad que si podemos seleccionarla  ?>" class="myInput quantity touchspin"> 
 														<input type="submit" class="myBtn myBtn-border myBtn-rounded myBtn-sm myBtn-midlight pull-right" value="Añadir al carrito">
 													</div>
 												
@@ -607,49 +607,8 @@ include_once("./db_configuration.php");
                 </div>
                 <!-- /container -->
 
-
-
-
-
-
-
-
-                <script type="text/javascript">
-
-                    $(document).ready(function() {
-
-                        var cCarousel = $("#clients-carousel");
-
-                        cCarousel.owlCarousel({
-                            loop: true,
-                            nav: false,
-                            autoplay:true,
-                            autoplayTimeout:3000,
-                            autoplayHoverPause:true,
-                            pagination: false,
-                            margin: 30,
-                            responsive:{
-                                0:{ items:1 },
-                                600:{ items:2 },
-                                1000:{ items:4 },
-                                1200:{ items:5 },
-                                1400:{ items:6 }
-                            }
-                        });
-
-
-                    }); //ready
-
-                </script>
-
-
-
-
-
-
-
             </div>
-        </section><!-- #content end -->
+        </section>
 
 
 

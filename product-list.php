@@ -489,8 +489,8 @@ include_once("./db_configuration.php");
                             <div class="row product-list">
 
 							<?PHP
-							if(isset($productos) && count($productos) > 0){
-								foreach($productos as $producto){
+							if(isset($productos) && count($productos) > 0){//si existe la variabe productos y la cantidad de productos es mayor que 0 entonces
+								foreach($productos as $producto){//recorro con un foreach de la lista de productos y almaceno cada produto que hay en ella en la variable $producto
 							?>
 									<div class="col-md-4 col-sm-6">
 										<article class="product-card">
@@ -500,7 +500,7 @@ include_once("./db_configuration.php");
 												<div class="image-overlay" data-lightbox="gallery">
 													<a href="./imagenes/<?PHP echo $producto['FOTO']; ?>" data-lightbox="gallery-item"><i class="fa fa-search-plus"></i></a>
 													<a href="./imagenes/<?PHP echo $producto['FOTO']; ?>" class="hidden" data-lightbox="gallery-item"></a>
-													<a href="product-detail.php<?PHP echo '?p='.$categoria.'&s='.$sexo.'&e='.$edad.'&i='.$producto['IDPRODUCTO']; ?>"><i class="fa fa-ellipsis-h"></i></a>
+													<a href="product-detail.php<?PHP echo '?p='.$categoria.'&s='.$sexo.'&e='.$edad.'&i='.$producto['IDPRODUCTO']; //muestra la categoria sexo edad y la id del producto; categoria para saber si es sudadera, chandals... sexo para mujer o hombre... edad para adulto o niño y el id para que me cargue lo que aparece en la pagina?>"><i class="fa fa-ellipsis-h"></i></a>
 												</div>
 											</div>
 												
@@ -508,7 +508,6 @@ include_once("./db_configuration.php");
 												<form action="addCarrito.php" method="POST">
 
 													<div class="product-detail">
-														<h4><a href="product-detail.php<?PHP echo '?p='.$categoria.'&s='.$sexo.'&e='.$edad.'&i='.$producto['ID']; ?>"></a></h4>
 														<span class="price"><?PHP echo $producto['PRECIO']; ?>€</span>
 														<div class="add-to-cart">
 															<input type="hidden" name="IDPRODUCTO" value="<?PHP echo $producto['IDPRODUCTO']; ?>">
@@ -523,7 +522,7 @@ include_once("./db_configuration.php");
 										</article>
 									</div>
 							<?PHP
-								}
+                                }
 							}
 							?>
                             </div>
