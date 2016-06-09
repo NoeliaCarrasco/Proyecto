@@ -1,13 +1,13 @@
 <?PHP
 include_once("./db_configuration.php");
-	session_start();
-	$producto = 0;
-	$edad = 0;
-	$sexo = 0;
-	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){
-		$producto = intval($_REQUEST['p']);
-	}else{
-		$producto = 0;
+	session_start();//si no está creada la sesión, la crea, si la sesión está creada ya, la recupera
+	$producto = 0;//declarar la variable producto con valor 0 
+	$edad = 0;//declarar la variable edad con valor 0
+	$sexo = 0;//declarar la variable sexo con valor 0
+	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){//si esta establecida la variable p y su valor entero es mayor o igual que 0 y menor o igua que 4 entonces
+		$producto = intval($_REQUEST['p']);//le asignamos a la variable producto el valor entero de p
+	}else{//sino 
+		$producto = 0;//la variable producto es igual a 0
 	}
 	if(isset($_REQUEST['s']) && intval($_REQUEST['s']) > 0 && intval($_REQUEST['s']) <= 4){
 		$sexo = intval($_REQUEST['s']);
@@ -22,22 +22,45 @@ include_once("./db_configuration.php");
 	
 	
 	
-    $connection = new mysqli($db_host, $db_user, $db_password, "deportes");
-    $query = "";
-    if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
-        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,                   p.FECHA_ALTA DESC;";
-    }else{
-        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = ".$_SESSION['IDU']." AND p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,p.FECHA_ALTA DESC;";
+    $connection = new mysqli($db_host, $db_user, $db_password, "deportes");//creamos una instancia de la clase mysqli en la variable connection con los parametros $db_host, db_user, db_password, deportes
+    $query = "";//declaramos la variable query con valor vacio
+    if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si existe la variable rol y tiene valor entero igual 2 'administrador' entonces
+        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,                   p.FECHA_ALTA DESC;";//almacenamos en la variable query la consulta que coge todos los pedidos 
+    }else{//sino
+        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = ".$_SESSION['IDU']." AND p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,p.FECHA_ALTA DESC;";//almacenamos en la variable query la consulta que unicamente coge los pedidos de una id usuario concreta
     }
-    $pedidos=$connection->query($query);
-    $pedido=null;
-    $lista_pedidos = [];
-    do{
-        if($pedido != null){
-            array_push($lista_pedidos, $pedido);
+    $pedidos=$connection->query($query);////iniciamos la query dentro de la varriable pedidos
+    $pedido=null;//la variable pedido se inicia como nula
+    $lista_pedidos = [];//lista_pedidos se inicia como array
+    do{//iniciamos el bucle do
+        if($pedido != null){//si pedido no es nulo entonces
+            array_push($lista_pedidos, $pedido);//insertamos en el array pedido que se le genera una id numérica automáticamente
         }
-    }while($pedido=$pedidos->fetch_object());
+    }while($pedido=$pedidos->fetch_object());//cuando no quedan mas lineas de datos que coger se cierra el bucle asignandole a la variable pedido un objecto de la variable pedidos
 
+
+
+$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
+
+	
+	if (mysqli_connect_errno()) {
+		printf("Falló la conexión: %s\n", mysqli_connect_error());
+		exit();
+	}
+
+	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
+	$categorias = [];
+	if ($resultado = $mysqli->query($consulta)) {
+		if($resultado->num_rows > 0){
+			while ( $fila = $resultado->fetch_assoc() ) {
+				array_push($categorias, $fila);
+			}
+		}
+		$resultado->close();
+	}
+
+	
+	$mysqli->close();
 ?>
 
 <!DOCTYPE html>
@@ -177,10 +200,11 @@ include_once("./db_configuration.php");
 						<ul>
 					
 					<?PHP
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
+						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){//si esta establecida la variable idusuario e idusuario es distinta de vacio y esta establecida la variable rol y el valor entero es igual a dos entonces puede administrar usuarios y productos
 					?>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
 					<?PHP
 						}
 ?>
@@ -188,15 +212,14 @@ include_once("./db_configuration.php");
 						</ul>
 					</li>
                     <?PHP
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
+                     
 					<?PHP
-						}
-						if(!isset($_SESSION['IDUSUARIO'])){
+						if(!isset($_SESSION['IDUSUARIO'])){//si esta establecida la variable idusuario entonces inicia sesion 'login'
 					?>
                     <li><a href="login.php">Login</a></li>
 					<?PHP
-						}else{
+						}else{//sino desconectar
 					?>
                     <li><a href="disconnect.php">Logout</a></li>
 					<?PHP
@@ -205,7 +228,7 @@ include_once("./db_configuration.php");
                 </ul>
 
                 <ul class="divided">
-                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li>                    <li><i class="fa fa-user mr-5"></i> <span><?= $_SESSION['IDUSUARIO'] ?></span></li>
+                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li>                    <li><i class="fa fa-user mr-5"></i> <span><?= $_SESSION['IDUSUARIO']// ?></span></li>
                 </ul>
 
             </div>
@@ -264,45 +287,51 @@ include_once("./db_configuration.php");
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=0&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=0&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=0&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Mujer</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=1&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=1&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=1&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             </li>
                             <li><a href="#">Niño</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Niña</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="contact.php">Contacto</a>
@@ -319,24 +348,24 @@ include_once("./db_configuration.php");
                         ================= Shopping Cart ===================
                         =============================================== -->
                        <div id="shopping-cart">
-                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?><span class="badge"><?PHP $total_productos = 0; foreach($_SESSION['carrito'] as $producto_carrito){$total_productos+=$producto_carrito['CANTIDAD'];} echo $total_productos; ?></span><?PHP } ?></a>
-                            <?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?>
+                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){//si esta establecida la variable carrito y tiene una cantidad de productos en el carrito mayor que 0 entonces ?><span class="badge"><?PHP $total_productos = 0; foreach($_SESSION['carrito'] as $producto_carrito){$total_productos+=$producto_carrito['CANTIDAD'];} echo $total_productos; ?></span><?PHP }//el valor inicial de la variable totalproductos es cero y se repite el foreach para ir aumentando la cantidad en base al total de los productos que hay en el carrito,luego muestra el total ?></a>
+                            <?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){//si esta establecida la variable carrito y tiene una cantidad de productos en el carrito mayor que 0 entonces ?>
 							<div class="cart-content">
                                 <div class="cart-title">
                                     <h4>Carrito</h4>
                                 </div>
                                 <ul class="cart-items">
                                 <?PHP
-									foreach($_SESSION['carrito'] as $id => $producto_carrito){
+									foreach($_SESSION['carrito'] as $id => $producto_carrito){//recorro con el foreach la variable carrito guardando los productos en la variable producto_carrito mostrandome la id
 								?>
 									<li class="media">
                                         <div class="media-left">
                                             <a href="product-detail.php">
-                                                <img class="media-object thumb-w" alt="" src="./imagenes/<?PHP echo $producto_carrito['FOTO']; ?>">
+                                                <img class="media-object thumb-w" alt="" src="./imagenes/<?PHP echo $producto_carrito['FOTO'];//muestrame el contenido de la variable foto ?>">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <p class="media-heading"><a href="product-detail.php?i=<?PHP echo $id; ?>"><?PHP echo $producto_carrito['NOMBRE']; ?></a> <span class="quantity">x <?PHP echo $producto_carrito['CANTIDAD']; ?></span></p>
+                                            <p class="media-heading"><a href="product-detail.php?i=<?PHP echo $id;//muestrame la id ?>"><?PHP echo $producto_carrito['NOMBRE']; ?></a> <span class="quantity">x <?PHP echo $producto_carrito['CANTIDAD']; ?></span></p>
                                             <p class="price"><?PHP echo $producto_carrito['PRECIO']; ?>€</p>
                                         </div>
                                     </li>
@@ -345,8 +374,8 @@ include_once("./db_configuration.php");
 								?>
                                 </ul>
                                 <div class="cart-actions clearfix">
-									<?PHP $total = 0; foreach($_SESSION['carrito'] as $producto_carrito){ $total+=($producto_carrito['PRECIO']*$producto_carrito['CANTIDAD']);} ?>
-                                    <span class="price pull-left"><?PHP echo $total; ?>€</span>
+									<?PHP $total = 0; foreach($_SESSION['carrito'] as $producto_carrito){ $total+=($producto_carrito['PRECIO']*$producto_carrito['CANTIDAD']);}//declarar la variable total con valor inicial 0; recorro con el foreach la variable carrito guardando los productos en la variable producto_carrito sin mostrarme la id ?>
+                                    <span class="price pull-left"><?PHP echo $total;//mostrar contenido de la variable total ?>€</span>
                                     <a href="shopping-cart.php" class="myBtn myBtn-3d myBtn-sm pull-right">Ver carrito</a>
                                 </div>
                             </div>
@@ -446,7 +475,7 @@ include_once("./db_configuration.php");
                                                         
                                                         <th></th>
                                                         <?PHP
-												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si esta establecida la variable rol y su valor entero es igual a 2 entonces; es para las cabeceras vacias
 												        ?>
                                                         <th></th>
 														<th></th>
@@ -458,7 +487,7 @@ include_once("./db_configuration.php");
 												<tbody>
 												
 												<?PHP
-													foreach($lista_pedidos as $pedido){
+													foreach($lista_pedidos as $pedido){//recorro con el foreach la variable lista_pedidos guardando los datos de los pedidos en la variable pedido
 												?>
 													<tr>
 														<td class="product">
@@ -473,9 +502,9 @@ include_once("./db_configuration.php");
 														<td class="product">
 															<?=$pedido->Total?>
 														</td>
-														<td><a href="Administrardetallespedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-eye text-primary"></i></a></td>
+														<td><a href="copiadetalles.php?i=<?=$pedido->Pedido?>"><i class="fa fa-eye text-primary"></i></a></td>
                                                         <?PHP
-												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si existe la variable rol y el valor entero es igual 2 entonces borropedidos.
 												        ?>
 														<td><a href="borrarPedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-times-circle"></i></a></td>
                                                         <?PHP

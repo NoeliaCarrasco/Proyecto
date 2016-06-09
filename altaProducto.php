@@ -1,61 +1,47 @@
 <?php
 include_once("./db_configuration.php");
 	session_start();
-	/*echo '<pre>$_REQUEST<BR>'.print_r($_REQUEST, true).'</pre>';
-	echo '<pre>$_SESSION<BR>'.print_r($_SESSION, true).'</pre>';
-	echo '<pre>$_FILES<BR>'.print_r($_FILES, true).'</pre>';
-	echo '<pre>$_SERVER<BR>'.print_r($_SERVER, true).'</pre>';*/
-
 	if(!isset($_SESSION['rol'])){header('location: login.php');}else{if(intval($_SESSION['rol']) != 2){header('location: index.php');}}
 	if(isset($_REQUEST['nombre'])&&isset($_REQUEST['categoria'])){
 		$connection = new mysqli($db_host, $db_user, $db_password, "deportes");
 		
-		$insert="INSERT INTO productos VALUES(NULL, '".$_REQUEST['nombre']."', '".$_REQUEST['precio']."', '".intval($_REQUEST['stock'])."', '".$_FILES['fileToUpload']['name']."', '".$_REQUEST['categoria']."', '".$_REQUEST['descripcion']."')";
-		echo '<pre>'.print_r($_REQUEST, true).'</pre>';
-		echo $insert.'<br>';
+		$insert="INSERT INTO productos VALUES(NULL, '".$_REQUEST['nombre']."', '".$_REQUEST['precio']."', '".intval($_REQUEST['stock'])."', '".$_FILES['fileToUpload']['name']."', '".$_REQUEST['categoria']."', '".$_REQUEST['descripcion']."')";//creamos dentro de la variable insert la consulta para insertar nuevos productos insertandome como parametros el nombre, precio, stock convertido a entero, el nombre del fichero que acabo de subir, categoria y descripcion
+		
 		$connection->query($insert);
 					
-	$target_dir = getcwd()."\\imagenes\\";
-	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-	$uploadOk = 1;
-	$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-	// Check if image file is a actual image or fake image
-	if(isset($_POST["submit"])) {
-		$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-		if($check !== false) {
-			//echo "File is an image - " . $check["mime"] . ".";
-			$uploadOk = 1;
-		} else {
-			//echo "File is not an image.";
-			$uploadOk = 0;
+	$target_dir = getcwd()."\\imagenes\\";//getcwd nos devuelve el directorio donde está alojada la aplicación web y luego cogemos el fichero imagenes
+	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);//en la variable target_file mostramos todo lo guardado en la variable target_dir y luego cogemos el nombre basico del fichero subido
+	$uploadOk = 1;//si la subida es correcta es igual a 1
+	$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);//cogemos la ruta del fichero que estemos subiendo
+	
+	if(isset($_REQUEST["submit"])) {//si esta establecida la clave submit dentro del array request entonces
+		$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);//coge el nombre temporal del fichero y muestra el tamaño de este
+		if($check !== false) {//si la variable check es distinta de false entonces
+			
+			$uploadOk = 1;// la subida es igual a 1, por lo que es correcta
+		} else {//sino
+			
+			$uploadOk = 0;//la subida es igual a 0, por lo que no se ha realizado
 		}
 	}
-	// Check if file already exists
-	if (file_exists($target_file)) {
-	//	echo "Sorry, file already exists.";
-		$uploadOk = 0;
+	
+	if (file_exists($target_file)) {//si existe el fichero con la ruta almacenada en target_file entonces
+		$uploadOk = 0;//la subida es igual a 0
 	}
-	// Check file size
-	if ($_FILES["fileToUpload"]["size"] > 500000) {
-		//echo "Sorry, your file is too large.";
-		$uploadOk = 0;
+	
+	if ($_FILES["fileToUpload"]["size"] > 500000) {//si el tamaño del fichero es mayor de 500000
+		$uploadOk = 0;//la subida es igual a 0
 	}
-	// Allow certain file formats
+	
 	if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-	&& $imageFileType != "gif" ) {
-		//echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-		$uploadOk = 0;
+	&& $imageFileType != "gif" ) {//si el tipo de imagen es distinto de jpg, png, jpeg, gif
+		$uploadOk = 0;//la subida es cero
 	}
-	// Check if $uploadOk is set to 0 by an error
-	if ($uploadOk == 0) {
-		//echo "Sorry, your file was not uploaded.";
-	// if everything is ok, try to upload file
-	} else {
-		if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-		//	echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
-		} else {
-			//echo "Sorry, there was an error uploading your file.";
-		}
+	
+	if ($uploadOk == 0) {//si la subida es igual a 0 
+        //redirige a esa parte del if
+	} else {//sino
+		if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file));//mueve el fichero que esta en la ruta con nombre temporal a  la ruta de la variable target_file
 	}
 				
 	}

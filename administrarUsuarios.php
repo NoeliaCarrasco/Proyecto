@@ -42,6 +42,18 @@ include_once("./db_configuration.php");
 		$resultado->close();
 	}
 
+
+	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
+	$categorias = [];
+	if ($resultado = $mysqli->query($consulta)) {
+		if($resultado->num_rows > 0){
+			while ( $fila = $resultado->fetch_assoc() ) {
+				array_push($categorias, $fila);
+			}
+		}
+		$resultado->close();
+	}
+
 	
 	$mysqli->close();
 ?>
@@ -178,23 +190,25 @@ include_once("./db_configuration.php");
 
             <div class="container clearfix">
 
-                <ul class="pull-right">
+                 <ul class="pull-right">
+					<li><a href="#">Administrar</a>
+						<ul>
+					
 					<?PHP
 						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
-					<li><a href="#">Administrar</a>
-						<ul>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
+					<?PHP
+						}
+?>
                             <li><a href="administrarpedidos.php">Pedidos</a></li>
 						</ul>
 					</li>
-					<?PHP
-						}
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
-					?>
-					<?PHP
-						}
+					
+                    <?PHP
+						
 						if(!isset($_SESSION['IDUSUARIO'])){
 					?>
                     <li><a href="login.php">Login</a></li>
@@ -267,45 +281,51 @@ include_once("./db_configuration.php");
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=0&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=0&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=0&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Mujer</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=1&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=1&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=1&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             </li>
                             <li><a href="#">Niño</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Niña</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="contact.php">Contacto</a>

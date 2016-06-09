@@ -1,8 +1,9 @@
 <?PHP
+
 	if(isset($_SESSION['rol'])){header('location: index.php');}
-	$producto = 0;
-	$edad = 0;
-	$sexo = 0;
+        $producto = 0;
+        $edad = 0;
+        $sexo = 0;
 	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){
 		$producto = intval($_REQUEST['p']);
 	}else{
@@ -18,6 +19,30 @@
 	}else{
 		$edad = 0;
 	}
+
+
+$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
+
+	
+	if (mysqli_connect_errno()) {
+		printf("Falló la conexión: %s\n", mysqli_connect_error());
+		exit();
+	}
+
+	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
+	$categorias = [];
+	if ($resultado = $mysqli->query($consulta)) {
+		if($resultado->num_rows > 0){
+			while ( $fila = $resultado->fetch_assoc() ) {
+				array_push($categorias, $fila);
+			}
+		}
+		$resultado->close();
+	}
+
+	
+	$mysqli->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -195,7 +220,7 @@
                         <div class="row mt-20">
                             <div class="col-md-12">
 								<?PHP
-									switch($_REQUEST['e']){
+									switch($_REQUEST['e']){//el resultado de e es 1 me muestra error. los datos... si el 2 me muestra error. no se han ...
 										case '1':
 								?>
                                 <label class="text-danger"> ERROR. Los datos de inicio de sesión no coinciden. </label>

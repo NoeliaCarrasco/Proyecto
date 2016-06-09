@@ -1,28 +1,47 @@
 <?PHP
-    include_once("./db_configuration.php");
-    session_start();
-    $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
-
+include_once("./db_configuration.php");
+	session_start();
+	if(!isset($_SESSION['rol'])){header('location: login.php');}else{if(intval($_SESSION['rol']) != 2){header('location: index.php');}}
+	$producto = 0;
+	$edad = 0;
+	$sexo = 0;
+	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){
+		$producto = intval($_REQUEST['p']);
+	}else{
+		$producto = 0;
+	}
+	if(isset($_REQUEST['s']) && intval($_REQUEST['s']) > 0 && intval($_REQUEST['s']) <= 4){
+		$sexo = intval($_REQUEST['s']);
+	}else{
+		$sexo = 0;
+	}
+	if(isset($_REQUEST['e']) && intval($_REQUEST['e']) > 0 && intval($_REQUEST['e']) <= 4){
+		$edad = intval($_REQUEST['e']);
+	}else{
+		$edad = 0;
+	}
 	
+	
+	
+	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
+
 	if (mysqli_connect_errno()) {
 		printf("Falló la conexión: %s\n", mysqli_connect_error());
 		exit();
 	}
-
-	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
-	$categorias = [];
+	if(!isset($_REQUEST['i'])){
+		header('location: administrarCategorias.php');
+	}
+	$consulta = "SELECT * FROM categorias WHERE IDCATEGORIA = '".$_REQUEST['i']."' ORDER BY IDCATEGORIA";
+	$categoria_elegida = null;
 	if ($resultado = $mysqli->query($consulta)) {
 		if($resultado->num_rows > 0){
-			while ( $fila = $resultado->fetch_assoc() ) {
-				array_push($categorias, $fila);
-			}
+			$categoria_elegida = $resultado->fetch_assoc();
 		}
 		$resultado->close();
 	}
 
-	
 	$mysqli->close();
-
 ?>
 
 <!DOCTYPE html>
@@ -48,6 +67,7 @@
     <link rel="stylesheet" href="assets/js/vendor/bootstrap-select/css/bootstrap-select.min.css" type="text/css" />
     <link rel="stylesheet" href="assets/js/vendor/range-slider/css/styles.css" type="text/css" />
     <link rel="stylesheet" href="assets/js/vendor/touchspin/jquery.bootstrap-touchspin.css" type="text/css" />
+    <link rel="stylesheet" href="assets/js/vendor/starrr/starrr.css" type="text/css" />
 
     <!-- SLIDER REVOLUTION 4.x CSS SETTINGS -->
     <link rel="stylesheet" type="text/css" href="assets/js/vendor/rs-plugin/css/settings.css" media="screen" />
@@ -129,18 +149,6 @@
         ================= Search Container ==================
         ================================================= -->
 
-        <div id="search-container" class="search-box-wrapper">
-            <div class="container">
-                <i class="fa fa-search"></i>
-                <div class="search-box">
-                    <form action="http://example.com/" class="search-form" role="search" >
-                        <input type="search" name="s" value="" title="Press Enter to submit your search" placeholder="Search…" class="search-field">
-                        <input type="submit" value="Search" class="search-submit">
-                    </form>
-                </div>
-            </div>
-        </div><!--/ #search-container -->
-
 
 
 
@@ -152,30 +160,49 @@
         ================= Additional Navbar ===================
         =================================================== -->
 
-        <nav id="add-navbar">
+       <nav id="add-navbar">
 
             <div class="container clearfix">
 
-                <ul class="pull-right">
-                    <li><a href="account.php">Mi cuenta</a></li>
-                    <li><a href="checkout.php">Facturas</a></li>
+                 <ul class="pull-right">
+					<li><a href="#">Administrar</a>
+						<ul>
+					
+					<?PHP
+						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
+					?>
+							<li><a href="administrarUsuarios.php">Usuarios</a></li>
+							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
+					<?PHP
+						}
+?>
+                            <li><a href="administrarpedidos.php">Pedidos</a></li>
+						</ul>
+					</li>
+					
+                    <?PHP
+						
+						if(!isset($_SESSION['IDUSUARIO'])){
+					?>
                     <li><a href="login.php">Login</a></li>
+					<?PHP
+						}else{
+					?>
+                    <li><a href="disconnect.php">Logout</a></li>
+					<?PHP
+						}
+					?>
                 </ul>
 
                 <ul class="divided">
-                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li>
-                    <li><a href="#" class="active mr-5">€</a><a href="#" class="mr-5">$</a></li>
-                    <li class="dropdown"><a href="#">Español</a>
-                        <ul>
-                            <li><a href="#">Alemán</a></li>
-                            <li><a href="#">Inglés</a></li>
-                        </ul>
-                    </li>
+                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li>                    <li><i class="fa fa-user mr-5"></i> <span><?= $_SESSION['IDUSUARIO'] ?></span></li>
                 </ul>
 
             </div>
 
         </nav><!-- #add-navbar end -->
+
 
 
 
@@ -222,10 +249,9 @@
                     <!-- ============================================
                     ================= Main Navbar ===================
                     ============================================= -->
+					<nav id="main-navbar">
 
-                  <nav id="main-navbar">
-
-                        <ul>
+                       <ul>
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
@@ -289,42 +315,43 @@
                         <!-- ==============================================
                         ================= Shopping Cart ===================
                         =============================================== -->
-                        <div id="shopping-cart">
-                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><span class="badge">1</span></a>
-                            <div class="cart-content">
+                       <div id="shopping-cart">
+                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?><span class="badge"><?PHP $total_productos = 0; foreach($_SESSION['carrito'] as $producto_carrito){$total_productos+=$producto_carrito['CANTIDAD'];} echo $total_productos; ?></span><?PHP } ?></a>
+                            <?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?>
+							<div class="cart-content">
                                 <div class="cart-title">
                                     <h4>Carrito</h4>
                                 </div>
                                 <ul class="cart-items">
-                                    <li class="media">
+                                <?PHP
+									foreach($_SESSION['carrito'] as $id => $producto_carrito){
+								?>
+									<li class="media">
                                         <div class="media-left">
                                             <a href="product-detail.php">
-                                                <img class="media-object thumb-w" alt="" src="./imagenes/41za0AvEl8L._SY355_.jpg">
+                                                <img class="media-object thumb-w" alt="" src="./imagenes/<?PHP echo $producto_carrito['FOTO']; ?>">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <p class="media-heading"><a href="product-detail.php">Chandal nike</a> <span class="quantity">x 2</span></p>
-                                            <p class="price">14.99€</p>
+                                            <p class="media-heading"><a href="product-detail.php?i=<?PHP echo $id; ?>"><?PHP echo $producto_carrito['NOMBRE']; ?></a> <span class="quantity">x <?PHP echo $producto_carrito['CANTIDAD']; ?></span></p>
+                                            <p class="price"><?PHP echo $producto_carrito['PRECIO']; ?>€</p>
                                         </div>
                                     </li>
-                                    <li class="media">
-                                        <div class="media-left">
-                                            <a href="product-detail.php">
-                                                <img class="media-object thumb-w" alt="" src="./imagenes/chandal-adidas-nino-adi7151472.jpg">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <p class="media-heading"><a href="product-detail.php">Chandal adidas</a> <span class="quantity">x 1</span></p>
-                                            <p class="price">12.99€</p>
-                                        </div>
-                                    </li>
+								<?PHP
+									}
+								?>
                                 </ul>
                                 <div class="cart-actions clearfix">
-                                    <span class="price pull-left">69.22€</span>
+									<?PHP $total = 0; foreach($_SESSION['carrito'] as $producto_carrito){ $total+=($producto_carrito['PRECIO']*$producto_carrito['CANTIDAD']);} ?>
+                                    <span class="price pull-left"><?PHP echo $total; ?>€</span>
                                     <a href="shopping-cart.php" class="myBtn myBtn-3d myBtn-sm pull-right">Ver carrito</a>
                                 </div>
                             </div>
+							<?PHP
+							}
+							?>
                         </div><!-- #shopping-cart end -->
+
 
 
 
@@ -337,7 +364,7 @@
                         ================= Search Toggle ===================
                         =============================================== -->
 
-                         <div id="search-toggle"> <span class="divider">|</span> </div>
+                        <div id="search-toggle"> <span class="divider">|</span></div>
 
 
 
@@ -365,11 +392,11 @@
         <!-- ============================================
         =================== Breadcrumbs =================
         ============================================= -->
-        <section id="breadcrumbs" class="breadcrumbs">
+         <section id="breadcrumbs" class="breadcrumbs">
 
             <div class="container clearfix">
-                <h1>Mi Cuenta</h1>
-            </div>
+                <h1>Administrar categorias</h1>
+                
 
         </section><!-- #breadcrumbs end -->
 
@@ -395,40 +422,42 @@
                     <div class="row">
 
 
-                        <div class="col-sm-3">
-                            <ul class="tabs-menu">
-                                <li class="active"><a href="#">Login/Registrarse</a></li>
-                                <li><a href="#">Recuperación de contraseña</a></li>
-                                <li><a href="#">Mi cuenta</a></li>
-                                <li><a href="#">Direcciones</a></li>
-                                <li><a href="#">Lista de deseos</a></li>
-                                <li><a href="#">Devoluciones</a></li>
-                                <li><a href="#">Hoja informativa</a></li>
-                            </ul>
-                        </div>
+                        <!-- SHOPPING CART -->
+                        <div class="col-md-12">
 
-                        <div class="col-sm-9">
-                            <div class="well bg-white b-0">
-                                <h6 class="text-bold text-uppercase">Mi cuenta</h6>
-                                <ul>
-                                    <li><a href="#">Edita la informacion de tu cuenta</a></li>
-                                    <li><a href="#">Cambia tu contraseña</a></li>
-                                    <li><a href="#">Modifica las direcciones</a></li>
-                                    <li><a href="#">Modifica tu lista de deseos</a></li>
-                                </ul>
+                            <div class="checkout">
 
-                                <div class="line"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4 class="mt-40">MODIFICAR CATEGORIAS</h4>
 
-                                <h6 class="text-bold text-uppercase">Mis pedidos</h6>
-                                <ul>
-                                    <li><a href="#">Historial de pedidos</a></li>
-                                    <li><a href="#">Descargas</a></li>
-                                    <li><a href="#">Puntos de recompensa</a></li>
-                                    <li><a href="#">Solicitudes devueltas</a></li>
-                                    <li><a href="#">Opiniones</a></li>
-                                </ul>
+                                        <form action="cambiarDatosCategorias.php" method="post">
+
+                                            <div class="row">
+												
+												<input name="id" type="hidden" class="form-control myInput" id="id" value="<?=$categoria_elegida['IDCATEGORIA']//coge de la variable usuario_elegido el valor de la clave idusuario y lo pega en el html para mostrarlo?>" required>
+                                                <div class="form-group col-sm-6">
+                                                    <label for="nombre">Nombre <span class="text-lightred" style="font-size: 15px">*</span></label>
+                                                    <input name="nombre" type="text" class="form-control myInput" id="nombre" value="<?=$categoria_elegida['NOMBRE']?>" required> <!--required = a que es obligatorio-->
+                                                </div>
+
+                                            </div>
+
+											<div class="row">
+												<button type="submit" class="myBtn myBtn-success myBtn-rounded" style="width:100%;margin-top:30px;">Confirmar cambios</button>
+											</div>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
                             </div>
+
+
                         </div>
+                        <!-- END SHOPPING CART -->
 
                     </div>
                     <!-- /row -->
@@ -439,15 +468,12 @@
 
 
 
-                
-
-
 
         <!-- ============================================
         ==================== Footer =====================
         ============================================= -->
 
-       <footer id="footer">
+        <footer id="footer">
 
             <div class="footer-main">
                 <div class="container">
@@ -472,9 +498,9 @@
 
                         <div class="col-md-4">
                             <div class="widget widget-contact mt-20-md">
-                                <h4><strong>Contactenos</h4>
+                                <h4><strong>Contactenos</strong> </h4>
                                 <address>
-                                     <strong>Sevilla</strong><br>
+                                    <strong>Sevilla</strong><br>
                                     Avenida de la constitucion s/n<br>
                                     España<br/><br/>
                                     <strong>Telefono:</strong> +34 654 742 783<br>
@@ -491,11 +517,14 @@
                     <!-- row -->
                     <div class="row">
 
-
                     </div>
                     <!-- /row -->
 
                 </div>
+            </div>
+
+            <div class="footer-bottom">
+                
             </div>
 
         </footer><!-- #footer end -->

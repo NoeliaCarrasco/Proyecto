@@ -5,13 +5,12 @@ include_once("./db_configuration.php");
 	if(isset($_REQUEST['id'])){
 		$connection = new mysqli($db_host, $db_user, $db_password, "deportes");
 		
-		if($_FILES['fileToUpload']['name'] != ''){$fichero = ", FOTO='".$_FILES['fileToUpload']['name']."'";}else{ $fichero = "";}
-		$update="UPDATE productos SET NOMBRE = '".$_REQUEST['nombre']."', PRECIO='".floatval($_REQUEST['precio'])."'".$fichero.", STOCK='".intval($_REQUEST['stock'])."', IDCATEGORIA='".$_REQUEST['categoria']."', DESCRIPCION='".$_REQUEST['descripcion']."' WHERE IDPRODUCTO = '".$_REQUEST['id']."'";
-		echo '<pre>'.print_r($_REQUEST, true).'</pre>';
-		echo $update.'<br>';
+		if($_FILES['fileToUpload']['name'] != ''){$fichero = ", FOTO='".$_FILES['fileToUpload']['name']."'";}else{ $fichero = "";}//si el nombre del fichero es distinto de vacio entonces dentro de la variable fichero guardamos el campo foto siendo igual al nombre del fichero subido sino la variable fichero esta vacia y no mostrara nada
+		$update="UPDATE productos SET NOMBRE = '".$_REQUEST['nombre']."', PRECIO='".floatval($_REQUEST['precio'])."'".$fichero.", STOCK='".intval($_REQUEST['stock'])."', IDCATEGORIA='".$_REQUEST['categoria']."', DESCRIPCION='".$_REQUEST['descripcion']."' WHERE IDPRODUCTO = '".$_REQUEST['id']."'";//creamos dentro de la variable update la consulta para actualizar un producto insertando cada campo de la tabla producto y su valor, nombre = valor, precio = valor cnvertido en un valor float 'decimal', la variable fichero concatena o nada o foto igual a una ruta ( foto = yjdsyf.jpeg), stock = valor convertido en entero, idcategoria = valor, descripcion = valor cuando el idproducto es igual a la clave id de la variable request
 		$connection->query($update);
+        
 			
-		if($_FILES['fileToUpload']['name'] != ''){
+		if($_FILES['fileToUpload']['name'] != ''){// si el nombre del fichero es distinto de vacio
 			$target_dir = getcwd()."\\imagenes\\";
 			$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 			$uploadOk = 1;

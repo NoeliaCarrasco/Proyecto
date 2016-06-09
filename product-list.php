@@ -5,17 +5,17 @@ include_once("./db_configuration.php");
 	$categoria = 0;
 	$edad = 0;
 	$sexo = 0;
-	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){
+	if(isset($_REQUEST['p']) &&intval($_REQUEST['p']) >= 0){
 		$categoria = intval($_REQUEST['p']);
 	}else{
 		$categoria = 0;
 	}
-	if(isset($_REQUEST['s']) && intval($_REQUEST['s']) > 0 && intval($_REQUEST['s']) <= 4){
+	if(isset($_REQUEST['s']) && intval($_REQUEST['s']) >= 0 && intval($_REQUEST['s']) <= 4){
 		$sexo = intval($_REQUEST['s']);
 	}else{
 		$sexo = 0;
 	}
-	if(isset($_REQUEST['e']) && intval($_REQUEST['e']) > 0 && intval($_REQUEST['e']) <= 4){
+	if(isset($_REQUEST['e']) && intval($_REQUEST['e']) >= 0 && intval($_REQUEST['e']) <= 4){
 		$edad = intval($_REQUEST['e']);
 	}else{
 		$edad = 0;
@@ -23,12 +23,23 @@ include_once("./db_configuration.php");
 	
 	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
-	/* comprobar la conexión */
+	
 	if (mysqli_connect_errno()) {
 		printf("Falló la conexión: %s\n", mysqli_connect_error());
 		exit();
 	}
 
+	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
+	$categorias = [];
+	if ($resultado = $mysqli->query($consulta)) {
+		if($resultado->num_rows > 0){
+			while ( $fila = $resultado->fetch_assoc() ) {
+				array_push($categorias, $fila);
+			}
+		}
+		$resultado->close();
+	}
+    
 	$consulta = "SELECT * FROM productos WHERE IDCATEGORIA = '".$categoria."'";
 	$productos = [];
 	if ($resultado = $mysqli->query($consulta)) {
@@ -41,7 +52,7 @@ include_once("./db_configuration.php");
 		$resultado->close();
 	}
 
-	/* cerrar la conexión */
+	
 	$mysqli->close();
 ?>
 
@@ -177,22 +188,25 @@ include_once("./db_configuration.php");
 
             <div class="container clearfix">
 
-                <ul class="pull-right">
-					<?PHP
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
-					?>
+                 <ul class="pull-right">
 					<li><a href="#">Administrar</a>
 						<ul>
-							<li><a href="administrarUsuarios.php">Usuarios</a></li>
-							<li><a href="administrarProductos.php">Productos</a></li>
-						</ul>
-					</li>
+					
 					<?PHP
-						}
 						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
+							<li><a href="administrarUsuarios.php">Usuarios</a></li>
+							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
 					<?PHP
 						}
+?>
+                            <li><a href="administrarpedidos.php">Pedidos</a></li>
+						</ul>
+					</li>
+					
+                    <?PHP
+						
 						if(!isset($_SESSION['IDUSUARIO'])){
 					?>
                     <li><a href="login.php">Login</a></li>
@@ -265,45 +279,51 @@ include_once("./db_configuration.php");
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=0&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=0&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=0&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Mujer</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=1&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=1&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=1&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             </li>
                             <li><a href="#">Niño</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Niña</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="contact.php">Contacto</a>
@@ -432,48 +452,40 @@ include_once("./db_configuration.php");
                         <div class="col-md-3 col-sm-4 sidebar">
 
                             <ul class="sidebar-navigation" id="sidebar-menu">
-                                <li <?PHP if($sexo==1 && $edad==0){echo 'class="active open"';} ?>><a href="./product-list.php?p=0&s=1">Mujer</a>
+                                <li <?PHP if($sexo==1 && $edad==0){echo 'class="active open"';} ?>><a href="./product-list.php?p=0&s=1&e=0">Mujer</a>
                                     <ul>
-                                        <li <?PHP if($categoria == 0){echo 'class="active"';} ?>><a href="./product-list.php?p=0&s=1">Sudaderas</a></li>
-                                        <li <?PHP if($categoria == 1){echo 'class="active"';} ?>><a href="./product-list.php?p=1&s=1">Chandals</a></li>
-                                        <li <?PHP if($categoria == 2 || $categoria == 3){echo 'class="active open"';} ?>><a href="product-list.php?p=2&s=1">Zapatos deportivos</a>
-                                            <ul>
-                                                <li <?PHP if($categoria == 2){echo 'class="active"';} ?>><a href="./product-list.php?p=2&s=1">Botas de futbol</a></li>
-                                                <li <?PHP if($categoria == 3){echo 'class="active"';} ?>><a href="./product-list.php?p=3&s=1">Botines</a></li>
-                                                
-                                            </ul>
-                                        </li>
-                                        <li <?PHP if($categoria == 4){echo 'class="active"';} ?>><a href="./product-list.php?p=4&s=1">Mochilas y carteras</a></li>
+                                        <?PHP
+                                            foreach($categorias as $c){
+                                        ?>
+                                        <li <?PHP if($categoria == $c['IDCATEGORIA']){echo 'class="active"';} ?>><a href="./product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                        <?PHP } ?>
                                     </ul>
                                 </li>
-                                <li <?PHP if($sexo==0 && $edad==0){echo 'class="active open"';} ?>><a href="./product-list.php?p=0&s=0">Hombre</a>
+                                <li <?PHP if($sexo==0 && $edad==0){echo 'class="active open"';} ?>><a href="./product-list.php?p=0&s=0&e=0">Hombre</a>
                                     <ul>
-                                        <li <?PHP if($categoria == 0){echo 'class="active"';} ?>><a href="./product-list.php?p=0&s=1">Sudaderas</a></li>
-                                        <li <?PHP if($categoria == 1){echo 'class="active"';} ?>><a href="./product-list.php?p=1&s=1">Chandals</a></li>
-                                        <li <?PHP if($categoria == 2 || $categoria == 3){echo 'class="active open"';} ?>><a href="./product-list.php?p=2&s=1">Zapatos deportivos</a>
-                                            <ul>
-                                                <li <?PHP if($categoria == 2){echo 'class="active"';} ?>><a href="./product-list.php?p=2&s=1">Botas de futbol</a></li>
-                                                <li <?PHP if($categoria == 3){echo 'class="active"';} ?>><a href="./product-list.php?p=3&s=1">Botines</a></li>
-                                                
-                                            </ul>
-                                        </li>
-                                        <li <?PHP if($categoria == 4){echo 'class="active"';} ?>><a href="./product-list.php?p=4&s=1">Mochilas y carteras</a></li>
+                                        <?PHP
+                                            foreach($categorias as $c){
+                                        ?>
+                                        <li <?PHP if($categoria == $c['IDCATEGORIA']){echo 'class="active"';} ?>><a href="./product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                        <?PHP } ?>
                                     </ul>
                                 </li>
                                 <li <?PHP if($sexo==0 && $edad==1){echo 'class="active open"';} ?>><a href="product-list.php?p=0&s=0&e=1">Niño</a>
                                     <ul>
-                                        <li <?PHP if($categoria == 0){echo 'class="active"';} ?>><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                        <li <?PHP if($categoria == 1){echo 'class="active"';} ?>><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                        <li <?PHP if($categoria == 2){echo 'class="active"';} ?>><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                        <li <?PHP if($categoria == 4){echo 'class="active"';} ?>><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+                                        <?PHP
+                                            foreach($categorias as $c){
+                                        ?>
+                                        <li <?PHP if($categoria == $c['IDCATEGORIA']){echo 'class="active"';} ?>><a href="./product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                        <?PHP } ?>
                                     </ul>
                                 </li>
 								<li <?PHP if($sexo==1 && $edad==1){echo 'class="active open"';} ?>><a href="product-list.php?p=0&s=1&e=1">Niña</a>
                                     <ul>
-                                        <li <?PHP if($categoria == 0){echo 'class="active"';} ?>><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                        <li <?PHP if($categoria == 1){echo 'class="active"';} ?>><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                        <li <?PHP if($categoria == 2){echo 'class="active"';} ?>><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                        <li <?PHP if($categoria == 4){echo 'class="active"';} ?>><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+                                        <?PHP
+                                            foreach($categorias as $c){
+                                        ?>
+                                        <li <?PHP if($categoria == $c['IDCATEGORIA']){echo 'class="active"';} ?>><a href="./product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                        <?PHP } ?>
                                     </ul>
 								</li>
                                 

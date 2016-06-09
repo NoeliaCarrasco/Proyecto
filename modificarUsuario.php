@@ -41,6 +41,19 @@ include_once("./db_configuration.php");
 		$resultado->close();
 	}
 
+
+	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
+	$categorias = [];
+	if ($resultado = $mysqli->query($consulta)) {
+		if($resultado->num_rows > 0){
+			while ( $fila = $resultado->fetch_assoc() ) {
+				array_push($categorias, $fila);
+			}
+		}
+		$resultado->close();
+	}
+
+	
 	$mysqli->close();
 ?>
 
@@ -164,22 +177,25 @@ include_once("./db_configuration.php");
 
             <div class="container clearfix">
 
-                <ul class="pull-right">
-					<?PHP
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
-					?>
+                 <ul class="pull-right">
 					<li><a href="#">Administrar</a>
 						<ul>
-							<li><a href="administrarUsuarios.php">Usuarios</a></li>
-							<li><a href="administrarProductos.php">Productos</a></li>
-						</ul>
-					</li>
+					
 					<?PHP
-						}
 						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
+							<li><a href="administrarUsuarios.php">Usuarios</a></li>
+							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
 					<?PHP
 						}
+?>
+                            <li><a href="administrarpedidos.php">Pedidos</a></li>
+						</ul>
+					</li>
+					
+                    <?PHP
+						
 						if(!isset($_SESSION['IDUSUARIO'])){
 					?>
                     <li><a href="login.php">Login</a></li>
@@ -193,7 +209,7 @@ include_once("./db_configuration.php");
                 </ul>
 
                 <ul class="divided">
-                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li> <li><i class="fa fa-user mr-5"></i> <span><?= $_SESSION['IDUSUARIO'] ?></span></li>
+                    <li><i class="fa fa-phone mr-5"></i> <span>+34 654 742 783</span></li>                    <li><i class="fa fa-user mr-5"></i> <span><?= $_SESSION['IDUSUARIO'] ?></span></li>
                 </ul>
 
             </div>
@@ -248,49 +264,55 @@ include_once("./db_configuration.php");
                     ============================================= -->
 					<nav id="main-navbar">
 
-                       <ul>
+                        <ul>
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=0&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=0&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=0&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Mujer</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=1&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=1&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=1&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             </li>
                             <li><a href="#">Niño</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Niña</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="contact.php">Contacto</a>
@@ -426,10 +448,10 @@ include_once("./db_configuration.php");
 
                                             <div class="row">
 												
-												<input name="id" type="hidden" class="form-control myInput" id="id" value="<?=$usuario_elegido['IDUSUARIO']?>" required>
+												<input name="id" type="hidden" class="form-control myInput" id="id" value="<?=$usuario_elegido['IDUSUARIO']//coge de la variable usuario_elegido el valor de la clave idusuario y lo pega en el html para mostrarlo?>" required>
                                                 <div class="form-group col-sm-6">
                                                     <label for="nombre">Nombre <span class="text-lightred" style="font-size: 15px">*</span></label>
-                                                    <input name="nombre" type="text" class="form-control myInput" id="nombre" value="<?=$usuario_elegido['NOMBRE']?>" required>
+                                                    <input name="nombre" type="text" class="form-control myInput" id="nombre" value="<?=$usuario_elegido['NOMBRE']?>" required> <!--required = a que es obligatorio-->
                                                 </div>
 
                                                 <div class="form-group col-sm-6">
@@ -459,7 +481,7 @@ include_once("./db_configuration.php");
 													<h4 class="mt-40">Permisos</h4>
 														<div class="col-md-6">
 															<label class="checkbox checkbox-custom mb-20">
-																<input type="radio" name="admin" value="1" <?PHP if($usuario_elegido['ROL'] != '2'){ ?> checked <?PHP }?>><i></i>
+																<input type="radio" name="admin" value="1" <?PHP if($usuario_elegido['ROL'] != '2'){ //si el rol del usuario es distinto de dos selecciona cliente?> checked <?PHP }//seleccionar?>><i></i>
 																<h6 class="text-bold text-uppercase m-0 inline">Cliente</h6>
 															</label>
 														</div>

@@ -23,7 +23,7 @@ include_once("./db_configuration.php");
 	
 	
 	
-	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
+	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");//creamos una instancia de la clase mysqli en la variable mysqli con los parametros $db_host, db_user, db_password, deportes
 
 	/* comprobar la conexión */
 	if (mysqli_connect_errno()) {
@@ -31,30 +31,30 @@ include_once("./db_configuration.php");
 		exit();
 	}
 
-	$consulta = "SELECT productos.*, categorias.NOMBRE AS CATEGORIA FROM productos, categorias WHERE productos.IDCATEGORIA = categorias.IDCATEGORIA ORDER BY IDPRODUCTO";
-	$productos_lista = [];
-	if ($resultado = $mysqli->query($consulta)) {
-		if($resultado->num_rows > 0){
-			while ( $fila = $resultado->fetch_assoc() ) {
-			/* liberar el conjunto de resultados */
-				array_push($productos_lista, $fila);
+	$consulta = "SELECT productos.*, categorias.NOMBRE AS CATEGORIA FROM productos, categorias WHERE productos.IDCATEGORIA = categorias.IDCATEGORIA ORDER BY IDPRODUCTO";// la variable consulta va a almacenar la consulta que vamos a realizar
+	$productos_lista = [];//productos_lista se inicia como array
+	if ($resultado = $mysqli->query($consulta)) {//si iniciamos la query dentro de la varriable resultado entonces
+		if($resultado->num_rows > 0){//si la variable resultado tiene un numero de filas mayor que 0 entonces
+			while ( $fila = $resultado->fetch_assoc() ) {//dentro de la variable fila guardamos los campos de un producto como un array asociativo hasta que feth_assoc sea nulo y termine el bucle
+
+				array_push($productos_lista, $fila);//cada fila que genera el bucle se guarda en productos_lista que hemos declarado anteriormente como un array
 			}
 		}
 		$resultado->close();
 	}
+
 	$consulta = "SELECT * FROM categorias ORDER BY IDCATEGORIA";
 	$categorias = [];
 	if ($resultado = $mysqli->query($consulta)) {
 		if($resultado->num_rows > 0){
 			while ( $fila = $resultado->fetch_assoc() ) {
-			/* liberar el conjunto de resultados */
 				array_push($categorias, $fila);
 			}
 		}
 		$resultado->close();
 	}
 
-	/* cerrar la conexión */
+	
 	$mysqli->close();
 ?>
 
@@ -137,6 +137,16 @@ include_once("./db_configuration.php");
 		filter: alpha(opacity=0);
 	}
 	</style>
+    
+    <?php
+
+    //padding = espacio alrededor de un contexto
+    //cursor: pointer = con el cursor punteo
+    //filter. alpha... = para coger mas transparencia, el valor de opacity puede ser entre 0-100
+    //overflow: hidden = si el contenido supera el tamaño del div en que esta, no se muestra lo que sobra
+    //fileupload clase
+
+    ?>
 
 
 
@@ -208,22 +218,24 @@ include_once("./db_configuration.php");
             <div class="container clearfix">
 
                 <ul class="pull-right">
+					<li><a href="#">Administrar</a>
+						<ul>
+					
 					<?PHP
 						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
-					<li><a href="#">Administrar</a>
-						<ul>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
+                            <li><a href="administrarCategorias.php">Categorias</a></li>
+					<?PHP
+						}
+?>
                             <li><a href="administrarpedidos.php">Pedidos</a></li>
 						</ul>
 					</li>
-					<?PHP
-						}
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
-					?>
-					<?PHP
-						}
+					
+                    <?PHP
+						
 						if(!isset($_SESSION['IDUSUARIO'])){
 					?>
                     <li><a href="login.php">Login</a></li>
@@ -296,45 +308,51 @@ include_once("./db_configuration.php");
                             <li><a href="index.php">Inicio</a></li>
                             <li><a href="#">Hombre</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=0&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=0&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=0&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Mujer</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=0">Chandals</a></li>
-                                    <li><a href="#">Zapatos deportivos</a>
-										<ul>
-											<li><a href="product-list.php?p=2&s=1&e=0">Botas de fútbol</a></li>
-											<li><a href="product-list.php?p=3&s=1&e=0">Botines</a></li>
-										</ul>
-									</li>
-                                    <li><a href="product-list.php?p=4&s=1&e=0">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=0"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             </li>
                             <li><a href="#">Niño</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=0&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=0&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=0&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=0&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=0&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="#">Niña</a>
                                 <ul>
-                                    <li><a href="product-list.php?p=0&s=1&e=1">Sudaderas</a></li>
-                                    <li><a href="product-list.php?p=1&s=1&e=1">Chandals</a></li>
-                                    <li><a href="product-list.php?p=2&s=1&e=1">Zapatos deportivos</a></li>
-                                    <li><a href="product-list.php?p=4&s=1&e=1">Mochilas y carteras</a></li>
+												
+                                <?PHP
+                                    foreach($categorias as $c){
+                                ?>
+                                        <li><a href="product-list.php?p=<?PHP echo $c['IDCATEGORIA']; ?>&s=1&e=1"><?PHP echo $c['NOMBRE']; ?></a></li>
+                                <?PHP
+                                    }
+                                ?>
                                 </ul>
                             </li>
                             <li><a href="contact.php">Contacto</a>
@@ -484,11 +502,11 @@ include_once("./db_configuration.php");
 												<tbody>
 												
 												<?PHP
-													foreach($productos_lista as $producto_lista){
+													foreach($productos_lista as $producto_lista){//recorro con el foreach cada fila del array productos_lista y las guardo en producto_lista
 												?>
 													<tr>
 														<td>
-															<img height="50px" src="./imagenes/<?=$producto_lista['FOTO']?>" alt="<?=$producto_lista['NOMBRE']?>">
+															<img height="50px" src="./imagenes/<?=$producto_lista['FOTO']//coge de la variable producto_lista el valor de la clave foto y lo pega en el html para mostrarlo?>" alt="<?=$producto_lista['NOMBRE']?>">
 														</td>
 														<td class="product">
 															<?=$producto_lista['IDPRODUCTO']?>
@@ -542,14 +560,14 @@ include_once("./db_configuration.php");
                                                     <label for="categoria">Categoría <span class="text-lightred" style="font-size: 15px">*</span></label>
 													<select name="categoria" class="form-control myInput" id="categoria">
 													<?PHP
-														foreach($categorias as $categoria){
-															if($categoria['IDCATEGORIA'] != $producto_elegido['IDCATEGORIA']){
+														foreach($categorias as $categoria){//recorro con el foreach cada fila del array categorias y las guardo en categoria
+															if($categoria['IDCATEGORIA'] != $producto_elegido['IDCATEGORIA']){//si el idcategoria de la variable categoria es distinto del idcategoria de la variable producto_elegido entonces
 													?>
-														<option value="<?=$categoria['IDCATEGORIA']?>"><?=$categoria['NOMBRE']?></option>
+														<option value="<?=$categoria['IDCATEGORIA']?>"><?=$categoria['NOMBRE']//coge de la variable categoria el valor de la clave idcategoria y la clave nombre y lo pega en el html para mostrarlo?></option>
 													<?PHP
-															}else{
+															}else{//sino
 													?>
-														<option value="<?=$categoria['IDCATEGORIA']?>" selected><?=$categoria['NOMBRE']?></option>
+														<option value="<?=$categoria['IDCATEGORIA']?>" selected><?=$categoria['NOMBRE']//coge de la variable categoria el valor seleccionado de la clave idcategoria y la clave nombre y lo pega en el html para mostrarlo?></option>
 													<?PHP
 															}
 														}

@@ -17,22 +17,21 @@ include_once("./db_configuration.php");
 
         $consulta = "SELECT * FROM usuarios WHERE USUARIO = '".$usuario."' AND PASSWORD = '".$password."'";
 		
-        if ($resultado = $mysqli->query($consulta)) {
-            if($resultado->num_rows > 0){
-            /* liberar el conjunto de resultados */
-                session_start();
-                $usuario_conectado = $resultado->fetch_assoc();
-                $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];
-                header('Location: index.php');
-            }else{
-                echo 'LOS DATOS DE CONEXION NO COINCIDEN<br>';
+        if ($resultado = $mysqli->query($consulta)) {//si creamos la query y el resultado de la query y lo guardamos en resultado
+            if($resultado->num_rows > 0){//si la variable resultado tiene un numero de filas mayor que 0 entonces
+            
+                session_start();//inicia sesion
+                $usuario_conectado = $resultado->fetch_assoc();//dentro de la variable usuario_conectado guardamos los campos del usuario como un array asociativo 
+                $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];//le asigno a la variable idusuario que esta dentro de session el valor usuario que tenemos dentro de la variable usuario_conectado
+                header('Location: index.php');//me dirige al index
+            }else{//sino
+                echo 'LOS DATOS DE CONEXION NO COINCIDEN<br>';//muestrame los datos...
             }
-            $resultado->close();
+            $resultado->close();//libera el conjunto de resultados
         }
 
-        /* cerrar la conexión */
-        $mysqli->close();
-    }else{
+        $mysqli->close();//cerrar la conexión
+    }else{//sino muestrame no se ...
         echo 'No se han introducido datos de conexion<br>';
     }
 ?>
