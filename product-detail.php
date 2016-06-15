@@ -27,7 +27,7 @@ include_once("./db_configuration.php");
 	
 	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
-	/* comprobar la conexión */
+	
 	if (mysqli_connect_errno()) {
 		printf("Falló la conexión: %s\n", mysqli_connect_error());
 		exit();
@@ -38,7 +38,7 @@ include_once("./db_configuration.php");
 	$producto = '';
 	if ($resultado = $mysqli->query($consulta)) {
 		if($resultado->num_rows > 0){
-		/* liberar el conjunto de resultados */
+		
 			$producto = $resultado->fetch_assoc();
 		}
 		$resultado->close();
@@ -529,7 +529,7 @@ include_once("./db_configuration.php");
                                                             zoomType: "inner"
                                                         });
 
-                                                    }); //cada vez que ponemos el raton encima de la imagen la aumenta 
+                                                    }); 
 
                                                 </script>
                                             </div>
@@ -552,7 +552,7 @@ include_once("./db_configuration.php");
 														<input type="hidden" name="FOTO" value="<?PHP echo $producto['FOTO']; ?>">
 														<input type="hidden" name="NOMBRE" value="<?PHP echo $producto['NOMBRE']; ?>">
 														<input type="hidden" name="PRECIO" value="<?PHP echo $producto['PRECIO']; ?>">
-														<input type="text" name="CANTIDAD" value="1" max="<?PHP echo $producto['STOCK'];//son los campos del producto que coge. Estan ocultos menos la cantidad que si podemos seleccionarla  ?>" class="myInput quantity touchspin"> 
+														<input type="text" name="CANTIDAD" value="1" max="<?PHP echo $producto['STOCK'];  ?>" class="myInput quantity touchspin"> 
 														<input type="submit" class="myBtn myBtn-border myBtn-rounded myBtn-sm myBtn-midlight pull-right" value="Añadir al carrito">
 													</div>
 												
