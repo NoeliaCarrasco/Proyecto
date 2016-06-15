@@ -1,13 +1,13 @@
 <?PHP
 include_once("./db_configuration.php");
-	session_start();//si no está creada la sesión, la crea, si la sesión está creada ya, la recupera
-	$producto = 0;//declarar la variable producto con valor 0 
-	$edad = 0;//declarar la variable edad con valor 0
-	$sexo = 0;//declarar la variable sexo con valor 0
-	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){//si esta establecida la variable p y su valor entero es mayor o igual que 0 y menor o igua que 4 entonces
-		$producto = intval($_REQUEST['p']);//le asignamos a la variable producto el valor entero de p
-	}else{//sino 
-		$producto = 0;//la variable producto es igual a 0
+	session_start();
+	$producto = 0;
+	$edad = 0;
+	$sexo = 0;
+	if(isset($_REQUEST['p']) && intval($_REQUEST['p']) >= 0 && intval($_REQUEST['p']) <= 4){
+		$producto = intval($_REQUEST['p']);
+	}else{ 
+		$producto = 0;
 	}
 	if(isset($_REQUEST['s']) && intval($_REQUEST['s']) > 0 && intval($_REQUEST['s']) <= 4){
 		$sexo = intval($_REQUEST['s']);
@@ -22,21 +22,21 @@ include_once("./db_configuration.php");
 	
 	
 	
-    $connection = new mysqli($db_host, $db_user, $db_password, "deportes");//creamos una instancia de la clase mysqli en la variable connection con los parametros $db_host, db_user, db_password, deportes
-    $query = "";//declaramos la variable query con valor vacio
-    if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si existe la variable rol y tiene valor entero igual 2 'administrador' entonces
-        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,                   p.FECHA_ALTA DESC;";//almacenamos en la variable query la consulta que coge todos los pedidos 
-    }else{//sino
-        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = ".$_SESSION['IDU']." AND p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,p.FECHA_ALTA DESC;";//almacenamos en la variable query la consulta que unicamente coge los pedidos de una id usuario concreta
+    $connection = new mysqli($db_host, $db_user, $db_password, "deportes");
+    $query = "";
+    if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
+        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,                   p.FECHA_ALTA DESC;"; 
+    }else{
+        $query = "SELECT p.idpedido as Pedido, u.usuario as Usuario, p.fecha_alta as Fecha, sum(dp.CANTIDAD*dp.IMPORTE) as Total FROM pedidos p,             detallespedido dp, usuarios u WHERE p.IDUSUARIO = ".$_SESSION['IDU']." AND p.IDUSUARIO = u.IDUSUARIO AND dp.IDPEDIDO = p.IDPEDIDO GROUP BY p.IDPEDIDO ORDER BY u.USUARIO,p.FECHA_ALTA DESC;";
     }
-    $pedidos=$connection->query($query);////iniciamos la query dentro de la varriable pedidos
-    $pedido=null;//la variable pedido se inicia como nula
-    $lista_pedidos = [];//lista_pedidos se inicia como array
-    do{//iniciamos el bucle do
-        if($pedido != null){//si pedido no es nulo entonces
-            array_push($lista_pedidos, $pedido);//insertamos en el array pedido que se le genera una id numérica automáticamente
+    $pedidos=$connection->query($query);
+    $pedido=null;
+    $lista_pedidos = [];
+    do{
+        if($pedido != null){
+            array_push($lista_pedidos, $pedido);
         }
-    }while($pedido=$pedidos->fetch_object());//cuando no quedan mas lineas de datos que coger se cierra el bucle asignandole a la variable pedido un objecto de la variable pedidos
+    }while($pedido=$pedidos->fetch_object());
 
 
 
@@ -200,7 +200,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 						<ul>
 					
 					<?PHP
-						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){//si esta establecida la variable idusuario e idusuario es distinta de vacio y esta establecida la variable rol y el valor entero es igual a dos entonces puede administrar usuarios y productos
+						if((isset($_SESSION['IDUSUARIO']) && $_SESSION['IDUSUARIO'] != '') && (isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2)){
 					?>
 							<li><a href="administrarUsuarios.php">Usuarios</a></li>
 							<li><a href="administrarProductos.php">Productos</a></li>
@@ -215,11 +215,11 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 					?>
                      
 					<?PHP
-						if(!isset($_SESSION['IDUSUARIO'])){//si esta establecida la variable idusuario entonces inicia sesion 'login'
+						if(!isset($_SESSION['IDUSUARIO'])){
 					?>
                     <li><a href="login.php">Login</a></li>
 					<?PHP
-						}else{//sino desconectar
+						}else{
 					?>
                     <li><a href="disconnect.php">Logout</a></li>
 					<?PHP
@@ -348,24 +348,24 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
                         ================= Shopping Cart ===================
                         =============================================== -->
                        <div id="shopping-cart">
-                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){//si esta establecida la variable carrito y tiene una cantidad de productos en el carrito mayor que 0 entonces ?><span class="badge"><?PHP $total_productos = 0; foreach($_SESSION['carrito'] as $producto_carrito){$total_productos+=$producto_carrito['CANTIDAD'];} echo $total_productos; ?></span><?PHP }//el valor inicial de la variable totalproductos es cero y se repite el foreach para ir aumentando la cantidad en base al total de los productos que hay en el carrito,luego muestra el total ?></a>
-                            <?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){//si esta establecida la variable carrito y tiene una cantidad de productos en el carrito mayor que 0 entonces ?>
+                            <a href="#" id="shopping-cart-trigger"><i class="fa fa-shopping-cart"></i><?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?><span class="badge"><?PHP $total_productos = 0; foreach($_SESSION['carrito'] as $producto_carrito){$total_productos+=$producto_carrito['CANTIDAD'];} echo $total_productos; ?></span><?PHP } ?></a>
+                            <?PHP if(isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0){ ?>
 							<div class="cart-content">
                                 <div class="cart-title">
                                     <h4>Carrito</h4>
                                 </div>
                                 <ul class="cart-items">
                                 <?PHP
-									foreach($_SESSION['carrito'] as $id => $producto_carrito){//recorro con el foreach la variable carrito guardando los productos en la variable producto_carrito mostrandome la id
+									foreach($_SESSION['carrito'] as $id => $producto_carrito){
 								?>
 									<li class="media">
                                         <div class="media-left">
                                             <a href="product-detail.php">
-                                                <img class="media-object thumb-w" alt="" src="./imagenes/<?PHP echo $producto_carrito['FOTO'];//muestrame el contenido de la variable foto ?>">
+                                                <img class="media-object thumb-w" alt="" src="./imagenes/<?PHP echo $producto_carrito['FOTO']; ?>">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <p class="media-heading"><a href="product-detail.php?i=<?PHP echo $id;//muestrame la id ?>"><?PHP echo $producto_carrito['NOMBRE']; ?></a> <span class="quantity">x <?PHP echo $producto_carrito['CANTIDAD']; ?></span></p>
+                                            <p class="media-heading"><a href="product-detail.php?i=<?PHP echo $id; ?>"><?PHP echo $producto_carrito['NOMBRE']; ?></a> <span class="quantity">x <?PHP echo $producto_carrito['CANTIDAD']; ?></span></p>
                                             <p class="price"><?PHP echo $producto_carrito['PRECIO']; ?>€</p>
                                         </div>
                                     </li>
@@ -374,8 +374,8 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 								?>
                                 </ul>
                                 <div class="cart-actions clearfix">
-									<?PHP $total = 0; foreach($_SESSION['carrito'] as $producto_carrito){ $total+=($producto_carrito['PRECIO']*$producto_carrito['CANTIDAD']);}//declarar la variable total con valor inicial 0; recorro con el foreach la variable carrito guardando los productos en la variable producto_carrito sin mostrarme la id ?>
-                                    <span class="price pull-left"><?PHP echo $total;//mostrar contenido de la variable total ?>€</span>
+									<?PHP $total = 0; foreach($_SESSION['carrito'] as $producto_carrito){ $total+=($producto_carrito['PRECIO']*$producto_carrito['CANTIDAD']);} ?>
+                                    <span class="price pull-left"><?PHP echo $total; ?>€</span>
                                     <a href="shopping-cart.php" class="myBtn myBtn-3d myBtn-sm pull-right">Ver carrito</a>
                                 </div>
                             </div>
@@ -475,7 +475,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
                                                         
                                                         <th></th>
                                                         <?PHP
-												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si esta establecida la variable rol y su valor entero es igual a 2 entonces; es para las cabeceras vacias
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
 												        ?>
                                                         <th></th>
 														<th></th>
@@ -487,7 +487,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 												<tbody>
 												
 												<?PHP
-													foreach($lista_pedidos as $pedido){//recorro con el foreach la variable lista_pedidos guardando los datos de los pedidos en la variable pedido
+													foreach($lista_pedidos as $pedido){
 												?>
 													<tr>
 														<td class="product">
@@ -504,7 +504,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 														</td>
 														<td><a href="Administrardetallespedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-eye text-primary"></i></a></td>
                                                         <?PHP
-												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){//si existe la variable rol y el valor entero es igual 2 entonces borropedidos.
+												            if(isset($_SESSION['rol']) && intval($_SESSION['rol']) == 2){
 												        ?>
 														<td><a href="borrarPedidos.php?i=<?=$pedido->Pedido?>"><i class="fa fa-times-circle"></i></a></td>
                                                         <?PHP
