@@ -438,7 +438,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 													<p><?PHP echo $producto_carrito['CANTIDAD']; ?></p>
 												</td>
 												<td class="text-theme"><?PHP echo $producto_carrito['PRECIO']; ?>€</td>
-												<td class="text-theme"><?PHP echo (floatval($producto_carrito['PRECIO'])*floatval($producto_carrito['CANTIDAD']));//muestra el total del carrito que es e precio del producto que hay en el carrito por la cantidad de productos que haya y ambos valores convertidad a decimal ?>€</td>
+												<td class="text-theme"><?PHP echo (floatval($producto_carrito['PRECIO'])*floatval($producto_carrito['CANTIDAD'])); ?>€</td>
 												<td><a href="quitarCarrito.php?i=<?PHP echo $id; ?>"><i class="fa fa-times-circle"></i></a></td>
 											</tr>
                                         <?PHP
