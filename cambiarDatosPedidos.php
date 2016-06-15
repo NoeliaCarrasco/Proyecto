@@ -9,11 +9,3 @@ include_once("./db_configuration.php");
 	}
 	header('location: administrarpedidos.php');
 ?>
-/*
-
-    if -> si
-    !  -> not -> no
-    is -> está
-    set -> establecida
-
-*/
