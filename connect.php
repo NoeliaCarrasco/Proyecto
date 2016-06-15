@@ -18,12 +18,12 @@ include_once("./db_configuration.php");
             if($resultado->num_rows > 0){
                     session_start();
                     $usuario_conectado = $resultado->fetch_assoc();
-                    $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];//le asigno a la variable idusuario que esta dentro de sesion el valor usuario que tenemos dentro de la variable usuario_conectado
+                    $_SESSION['IDUSUARIO'] = $usuario_conectado['USUARIO'];
                     $_SESSION['IDU'] = $usuario_conectado['IDUSUARIO'];
                     $_SESSION['rol'] = $usuario_conectado['ROL'];
                     header('Location: index.php');
             }else{
-                header('Location: login.php?e=1');//diregeme al login con codigo error 1
+                header('Location: login.php?e=1');
             }
             $resultado->close();
         }
