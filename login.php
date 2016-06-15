@@ -221,7 +221,7 @@ $mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
                         <div class="row mt-20">
                             <div class="col-md-12">
 								<?PHP
-									switch($_REQUEST['e']){//el resultado de e es 1 me muestra error. los datos... si el 2 me muestra error. no se han ...
+									switch($_REQUEST['e']){
 										case '1':
 								?>
                                 <label class="text-danger"> ERROR. Los datos de inicio de sesión no coinciden. </label>
