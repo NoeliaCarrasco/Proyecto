@@ -27,9 +27,9 @@ include_once("./db_configuration.php");
 	
 	$mysqli = new mysqli($db_host, $db_user, $db_password, "deportes");
 
-	/* comprobar la conexión */
-	if (mysqli_connect_errno()) {//si coneccion con la base de datos da error entonces
-		printf("Falló la conexión: %s\n", mysqli_connect_error());//muestrame fallo la conexion con una cadena que seria lo que se mostraria en mysqli_connect_error
+	
+	if (mysqli_connect_errno()) {
+		printf("Falló la conexión: %s\n", mysqli_connect_error());
 		exit();
 	}
 	if(!isset($_REQUEST['i'])){
