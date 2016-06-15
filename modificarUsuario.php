@@ -448,10 +448,10 @@ include_once("./db_configuration.php");
 
                                             <div class="row">
 												
-												<input name="id" type="hidden" class="form-control myInput" id="id" value="<?=$usuario_elegido['IDUSUARIO']//coge de la variable usuario_elegido el valor de la clave idusuario y lo pega en el html para mostrarlo?>" required>
+												<input name="id" type="hidden" class="form-control myInput" id="id" value="<?=$usuario_elegido['IDUSUARIO']?>" required>
                                                 <div class="form-group col-sm-6">
                                                     <label for="nombre">Nombre <span class="text-lightred" style="font-size: 15px">*</span></label>
-                                                    <input name="nombre" type="text" class="form-control myInput" id="nombre" value="<?=$usuario_elegido['NOMBRE']?>" required> <!--required = a que es obligatorio-->
+                                                    <input name="nombre" type="text" class="form-control myInput" id="nombre" value="<?=$usuario_elegido['NOMBRE']?>" required> 
                                                 </div>
 
                                                 <div class="form-group col-sm-6">
@@ -481,7 +481,7 @@ include_once("./db_configuration.php");
 													<h4 class="mt-40">Permisos</h4>
 														<div class="col-md-6">
 															<label class="checkbox checkbox-custom mb-20">
-																<input type="radio" name="admin" value="1" <?PHP if($usuario_elegido['ROL'] != '2'){ //si el rol del usuario es distinto de dos selecciona cliente?> checked <?PHP }//seleccionar?>><i></i>
+																<input type="radio" name="admin" value="1" <?PHP if($usuario_elegido['ROL'] != '2'){ ?> checked <?PHP }?>><i></i>
 																<h6 class="text-bold text-uppercase m-0 inline">Cliente</h6>
 															</label>
 														</div>
