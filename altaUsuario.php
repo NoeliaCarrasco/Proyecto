@@ -12,7 +12,7 @@ include_once("./db_configuration.php");
 			case 2:
 				$tipo = 'Administrador';
 				break;
-		}//para coger una de las dos opciones, le paso un numero por la condicion del switch y elige dependiendo del numero una opcion u otra y break es para saltar sin tener que pasar por el siguiente paso
+		}
 		
 		$insert="INSERT INTO usuarios VALUES(NULL, '".$_REQUEST['nombre']."', '".$_REQUEST['apellido']."', '".intval($_REQUEST['admin'])."', '".$tipo."', '".$_REQUEST['usuario']."', md5('".$_REQUEST['password']."'))";
 		$connection->query($insert);
