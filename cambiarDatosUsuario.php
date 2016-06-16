@@ -15,8 +15,7 @@ include_once("./db_configuration.php");
 		}
 		
 		$update="UPDATE usuarios SET NOMBRE = '".$_REQUEST['nombre']."', APELLIDO='".$_REQUEST['apellido']."', PASSWORD=md5('".$_REQUEST['password']."'), USUARIO='".$_REQUEST['usuario']."', ROL='".intval($_REQUEST['admin'])."', TIPO='".$tipo."' WHERE IDUSUARIO = '".$_REQUEST['id']."'";
-		echo '<pre>'.print_r($_REQUEST, true).'</pre>';
-		echo $update.'<br>';
+		
 		$connection->query($update);
 	}
 	header('location: administrarUsuarios.php');
